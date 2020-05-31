@@ -6,16 +6,17 @@ import json
 
 # Read the file
 print(f'Looking for droplist.txt in this folder {Path(__file__).parent}')
-with open('raw data/droplist.txt') as output_file:
+with open('droplist.txt') as output_file:
     raw_data = output_file.read()
 
+print('Found droplist!')
 
 # breakout the items into a list
 items = [[line for line in item.split('\n')] for item in raw_data.split('user\n')]
 
 
 # put the items into a dictionary
-def get_data():
+def get_data() -> dict:
     data = {}
     for item in items:
         item_name = item[0][:item[0].find('(')].strip()
@@ -36,8 +37,11 @@ def get_data():
     return data
 
 
-with open(f'items_by_character_{datetime.now().date()}.json', 'w') as output_file:
+filename = f'items_by_character_{datetime.now().date()}.json'
+with open(filename, 'w') as output_file:
     json.dump(get_data(), output_file)
+
+print(f'outputted to: {filename}')
 
 
 def test_get_data():
