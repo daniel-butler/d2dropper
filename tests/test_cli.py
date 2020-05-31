@@ -1,7 +1,9 @@
+from pathlib import Path
+
 from typer.testing import CliRunner
 import pytest
 
-from searcher import app
+from d2dropper.searcher import app
 
 
 def test_cli_command_works_as_expected(tmp_path):
@@ -28,7 +30,7 @@ def test_find_items():
     result = runner.invoke(app, [
         'search',
         'Zod Rune', 'Tal Rune', 'Ral Rune',
-        '--json-file', 'tests/raw data/items_by_character_2020-05-30.json'
+        '--json-file', str(Path(__file__).parent / 'raw data/items_by_character_2020-05-30.json')
     ])
 
     # THEN the values are correct

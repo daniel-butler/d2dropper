@@ -21,8 +21,7 @@ def clean(file_name: Optional[str] = None, output_path: Optional[Path] = None) -
     """
     if file_name is None:
         file_name = 'droplist.txt'
-    else:
-        file_name = Path(__file__).parent / Path(file_name)
+
     typer.echo(f'Looking for {file_name} in this folder {Path(__file__).parent}')
 
     with open(Path(file_name)) as output_file:
