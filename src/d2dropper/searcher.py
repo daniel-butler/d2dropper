@@ -2,14 +2,9 @@ from collections import Counter
 from datetime import datetime
 import json
 from pathlib import Path
-from typing import List, Optional
-
-import typer
-
-app = typer.Typer()
+from typing import List, Optional, Tuple
 
 
-@app.command()
 def clean(file_name: Optional[str] = None, output_path: Optional[Path] = None) -> None:
     f"""
     CTRL + A all of the items in Lime Drop and save into a text file.
@@ -22,11 +17,11 @@ def clean(file_name: Optional[str] = None, output_path: Optional[Path] = None) -
     if file_name is None:
         file_name = 'droplist.txt'
 
-    typer.echo(f'Looking for {file_name} in this folder {Path(__file__).parent}')
+    print(f'Looking for {file_name} in this folder {Path(__file__).parent}')
 
     with open(Path(file_name)) as output_file:
         raw_data = output_file.read()
-        typer.echo(f'Found droplist!: {file_name}')
+        print(f'Found droplist!: {file_name}')
 
     items = [[line for line in item.split('\n')] for item in raw_data.split('user\n')]
 
@@ -57,11 +52,10 @@ def clean(file_name: Optional[str] = None, output_path: Optional[Path] = None) -
     with open(file_name, 'w') as output_file:
         json.dump(clean_raw_data(), output_file)
 
-    typer.echo(f'outputted to: {file_name}')
+    print(f'outputted to: {file_name}')
 
 
-@app.command()
-def search(items: List[str], json_file: Optional[Path] = None) -> None:
+def search(items: List[str], json_file: Optional[Path] = None) -> List[Tuple[str, List[str]]]:
     f"""
     Using the items_by_character_YYYY-MM-DD.json file from limedrop's data spits out the 
     accounts and character information of the mules to reduce the number of mules needed to drop the given items.
@@ -84,7 +78,7 @@ def search(items: List[str], json_file: Optional[Path] = None) -> None:
             for file in files:
                 if file.name.startswith('items_by_character_'):
                     return file
-            typer.echo(f'Could not find the item_by_character file!')
+            print(f'Could not find the item_by_character file!')
 
         return get_most_recent_droplist(files_)
 
@@ -125,8 +119,4 @@ def search(items: List[str], json_file: Optional[Path] = None) -> None:
 
         results += [(account_, new_items_found)]
 
-    typer.echo(results)
-
-
-if __name__ == '__main__':
-    app()
+    return results
