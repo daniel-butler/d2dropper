@@ -4,9 +4,5 @@ venv
 *.pyc
 dist
 build
-raw data
 *.exe
 *.spec
-
-# Test data
-items_by_character_*.json
