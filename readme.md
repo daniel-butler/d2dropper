@@ -17,7 +17,10 @@ dropper.exe clean --help
 ## Developing
 
 ```bash
-# create the exe with
+# Install the requirements
+python -m pip install -r requirements.txt
+
+# create the exe with pyinstaller and the following commands
 pyinstaller searcher.py -n dropper -F --hidden-import=pkg_resources.py2_warn
 ```
 
