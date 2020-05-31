@@ -60,7 +60,7 @@ def clean(file_name: Optional[str] = None, output_path: Optional[Path] = None) -
 
 
 @app.command()
-def search(items: List[str], json_file: Optional[Path] = None) -> List[str]:
+def search(items: List[str], json_file: Optional[Path] = None) -> None:
     f"""
     Using the items_by_character_YYYY-MM-DD.json file from limedrop's data spits out the 
     accounts and character information of the mules to reduce the number of mules needed to drop the given items.

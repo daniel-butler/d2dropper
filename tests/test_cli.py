@@ -9,10 +9,15 @@ def test_cli_command_works_as_expected(tmp_path):
     runner = CliRunner()
 
     # WHEN invoking the cli
-    runner.invoke(app, ['clean', '--file-name', 'raw_data/test_data.txt', '--output-path', str(tmp_path)])
+    result = runner.invoke(
+        app, ['clean', '--file-name', 'tests/raw_data/test_data.txt', '--output-path', str(tmp_path)]
+    )
 
     # THEN the tmp_path has the expected file
-    assert len(tmp_path.iterdir()) == 1
+    assert len(list(tmp_path.iterdir())) == 1
+
+    # THEN the output is good
+    assert result.output == 1
 
     # THEN the json file is as expected
     pytest.fail('not completed')
