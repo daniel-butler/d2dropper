@@ -1,8 +1,13 @@
-from collections import Counter
+from collections import Counter, namedtuple
 from datetime import datetime
 import json
 from pathlib import Path
 from typing import List, Optional, Tuple
+
+import networkx as nx
+
+
+Item = namedtuple('Item', 'name character description key')
 
 
 def open_file(file_name: Optional[str] = None) -> str:
@@ -17,22 +22,22 @@ def open_file(file_name: Optional[str] = None) -> str:
         return output_file.read()
 
 
-def parse_item(item: list) -> dict:
+def parse_item(item: list) -> Item:
     item_name = item[0][:item[0].find('(')].strip()
     description = item[1:len(item) - 2]
 
     _character_line = item[-2]
     character = _character_line[:_character_line.find('/{')]
     item_key = _character_line[_character_line.find('{'):_character_line.find('}')]
-    return {
-        'name': item_name,
-        'character': character,
-        'description': description,
-        'item_key': item_key,
-    }
+    return Item(
+        name=item_name,
+        character=character,
+        description=description,
+        key=item_key,
+    )
 
 
-def parse_droplist_for_items_by_char(raw_data: str) -> List[dict]:
+def parse_droplist_for_items_by_char(raw_data: str) -> List[Item]:
     """Creates a list of items that contains a list of the items properties"""
     items = [[line for line in item.split('\n')] for item in raw_data.split('user\n')]
     return [
@@ -55,17 +60,13 @@ def clean(file_name: Optional[str] = None, output_path: Optional[Path] = None) -
 
     data = {}
     for item in items:
-        item_name = item['name']
-        description = item['description']
-        character = item['character']
+        characters_list = data.get(item.name, {'characters_holding': []}).get('characters_holding')
+        new_characters_list = characters_list + [item.character]
 
-        characters_list = data.get(item_name, {'characters_holding': []}).get('characters_holding')
-        new_characters_list = characters_list + [character]
-
-        data[item_name] = {
-            'name': item_name,
+        data[item.name] = {
+            'name': item.name,
             'characters_holding': new_characters_list,
-            'description': description,
+            'description': item.description,
         }
 
     file_name = f'items_by_character_{datetime.now().date()}.json'
@@ -75,6 +76,15 @@ def clean(file_name: Optional[str] = None, output_path: Optional[Path] = None) -
     with open(file_name, 'w') as output_file:
         json.dump(data, output_file)
     print(f'outputted to: {file_name}')
+
+
+def create_graph(file_name: Optional[str] = None, ) -> nx.Graph:
+    """Creates Graph of characters holding each item"""
+    raw_data = open_file(file_name)
+    items = parse_droplist_for_items_by_char(raw_data)
+    graph = nx.Graph()
+    graph.add_edges_from([(item.name, item.character, {'key': item.key}) for item in items])
+    return graph
 
 
 def search(items: List[str], json_file: Optional[Path] = None) -> List[Tuple[str, List[str]]]:
