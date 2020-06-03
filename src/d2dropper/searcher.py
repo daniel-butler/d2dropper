@@ -78,12 +78,14 @@ def clean(file_name: Optional[str] = None, output_path: Optional[Path] = None) -
     print(f'outputted to: {file_name}')
 
 
-def create_graph(file_name: Optional[str] = None, ) -> nx.Graph:
+def create_graph(find_items: List[str], file_name: Optional[str] = None) -> nx.Graph:
     """Creates Graph of characters holding each item"""
     raw_data = open_file(file_name)
     items = parse_droplist_for_items_by_char(raw_data)
     graph = nx.Graph()
-    graph.add_edges_from([(item.name, item.character, {'key': item.key}) for item in items])
+    graph.add_nodes_from([item.name for item in items if item.name in find_items], bipartite=0)
+    graph.add_nodes_from([item.character for item in items if item.name in find_items], bipartite=1)
+    graph.add_edges_from([(item.name, item.character, {'key': item.key}) for item in items if item.name in find_items])
     return graph
 
 
